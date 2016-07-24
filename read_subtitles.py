@@ -1,6 +1,6 @@
-def read_subtitles():
+def read_subtitles(file):
 	# opens subtitle file
-	srt = open('dora.srt', 'r')
+	srt = open(file, 'r')
 	lines = srt.readlines()
 	i = 0
 	print i, len(lines)
