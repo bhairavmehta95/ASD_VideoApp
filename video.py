@@ -8,10 +8,6 @@ import functools
 import time
 from read_subtitles import read_subtitles
 
-# Used by EventManager in override.py
-from inspect import getargspec
-#subprocess.call('python vlc.py dora.mp4')
-
 
 def play_vlc_video(movie):
     try:
