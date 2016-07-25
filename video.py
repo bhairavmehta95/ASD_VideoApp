@@ -9,7 +9,7 @@ import time
 from read_subtitles import read_subtitles
 
 
-def play_vlc_video(movie):
+def play_vlc_video(movie, end_times):
     try:
         from msvcrt import getch
     except ImportError:
@@ -47,15 +47,26 @@ def play_vlc_video(movie):
         }
 
     while True:
-        k = getch()
+        fd = sys.stdin.fileno()
+        elapsed = player.get_time()
+        print elapsed, end_times[0]
 
-        if k in keybindings:
-            keybindings[k]()
+        # TO DO: check thresholds
+        if abs(elapsed - end_times[0]) < 1000:
+            player.pause()
+
+            # call other function here
+
+            ### do processing here 
+            ###
+            time.sleep(3)
+            return
+
 
 
 if __name__ == '__main__':
     movie = '../dora.mp4'
     subtitles = 'dora.srt'
     end_times = read_subtitles(subtitles)
-    print end_times
-    player = play_vlc_video(movie)
+    #end_times = [10699]
+    play_vlc_video(movie, end_times)
