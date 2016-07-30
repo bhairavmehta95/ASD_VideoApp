@@ -1,10 +1,7 @@
 import subprocess
 from vlc import *
-import ctypes
-from ctypes.util import find_library
 import os
 import sys
-import functools
 import time
 from read_subtitles import read_subtitles
 
