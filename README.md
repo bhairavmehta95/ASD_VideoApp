@@ -16,15 +16,15 @@ While this project is still an early iteration, future builds will have:
 * A subtitle file (I am using a Dora .srt file off the internet)
 * A video file that goes along with that .srt file
 
-## Things That Work
+### Things That Work
 
 * Parsing subtitles
 * Google Speech starts up at about the right time (more testing needed, currently using two seconds) and records answers accurately
 * Printing questions and their responses (Need a way to generate reports)
 
-## Things That Don't Work
+### Things That Don't Work
 * Still getting some incorrect questions
 
-## Things To Still Be Implemented
+### Things To Still Be Implemented
 * OpenCV facial tracking + focus score
 * Report generation
