@@ -20,10 +20,10 @@ While this project is still an early iteration, future builds will have:
 * Parsing subtitles
 * Google Speech starts up at about the right time (more testing needed, currently using two seconds) and records answers accurately
 * Printing questions and their responses (Need a way to generate reports)
+* OpenCV facial tracking + focus score
 
 ### Things That Don't Work
 * Still getting some incorrect questions
 
 ### Things To Still Be Implemented
-* OpenCV facial tracking + focus score
 * Report generation
