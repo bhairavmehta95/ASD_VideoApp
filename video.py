@@ -5,10 +5,16 @@ import sys
 import time
 from read_subtitles import read_subtitles
 
+import cv2
+
 import speech_recognition as sr
 import threading
 
+count = 0
+faces_count = 0
+src = 0
 
+video_capture = cv2.VideoCapture(src)
 
 class speech_thread(threading.Thread):
     def __init__(self, threadID, name, counter):
@@ -19,6 +25,66 @@ class speech_thread(threading.Thread):
     def run(self):
         text = speech_query()
         print text
+
+class face_detect_thread(threading.Thread):
+    def __init__(self, threadID, name, counter):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.counter = counter
+    def run(self):
+        face_detect()
+
+class video_thread(threading.Thread):
+    def __init__(self, threadID, name, counter):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.counter = counter
+    def run(self):
+        movie = '../dora.mp4'
+        subtitles = 'dora.srt'
+        read_sub_return = read_subtitles(subtitles)
+        end_times = read_sub_return['timestamps']
+        dialogues = read_sub_return['dialogues']
+        #end_times = [10699]
+        play_vlc_video(movie, end_times, dialogues)
+
+def face_detect():
+    global count, faces_count, video_capture
+    cascPath = 'haarcascade_face_default.xml'
+    faceCascade = cv2.CascadeClassifier(cascPath)
+
+    while True:
+        # Capture frame-by-frame
+        for i in xrange(0,30):
+            ret, frame = video_capture.read()
+
+        ret, frame = video_capture.read()
+
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        faces = faceCascade.detectMultiScale(
+            gray,
+            scaleFactor=1.1,
+            minNeighbors=5,
+            minSize=(30, 30),
+            flags=cv2.cv.CV_HAAR_SCALE_IMAGE
+        )
+
+        # Draw a rectangle around the faces
+        for (x, y, w, h) in faces:
+            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+
+        if len(faces) != 0:
+            faces_count += len(faces)
+
+
+        # # Display the resulting frame
+        # cv2.imshow('Video', frame)
+
+        count += 1
+
 
 def speech_query():
     r = sr.Recognizer()
@@ -52,6 +118,30 @@ def speech_query():
     except KeyboardInterrupt:
         pass
 
+def start_app():
+    v_thread = video_thread(1, "Video Thread", 1)
+    v_thread.daemon = True
+    v_thread.start()
+
+    f_thread = face_detect_thread(1, "Face Detect Thread", 1)
+    f_thread.daemon = True
+    f_thread.start()
+
+    while True:
+        from msvcrt import getch
+        val = ord(getch())
+        # user input is q or escape
+        if val == 113 or val == 27:
+            quit_app() 
+            return
+
+def quit_app():
+    """Stop and exit"""
+    global count, faces_count
+    try:
+        print count, faces_count, faces_count/float(count)
+    except:
+        print "Divide by 0 error."
 
 def play_vlc_video(movie, end_times, dialogues):
     try:
@@ -80,11 +170,6 @@ def play_vlc_video(movie, end_times, dialogues):
     player.play()
 
 
-    def quit_app():
-        """Stop and exit"""
-        sys.exit(0)
-
-
     keybindings = {
         ' ': player.pause,
         'q': quit_app,
@@ -105,10 +190,11 @@ def play_vlc_video(movie, end_times, dialogues):
             continue
         if end_times[i] - elapsed < 2000 and not triggered:
             print "Question at: ", end_times[i], 'is', dialogues[i]
-            thread1 = speech_thread(1, "Thread-1", 1)
-            thread1.start()
+            s_thread = speech_thread(1, "Speech Thread", 1)
+            s_thread.daemon = True
+            s_thread.start()
 
-            while thread1.is_alive():
+            while s_thread.is_alive():
                 elapsed = player.get_time()
                 if elapsed - end_times[i] > 4000:
                     i += 1
@@ -121,10 +207,6 @@ def play_vlc_video(movie, end_times, dialogues):
                 
 
 if __name__ == '__main__':
-    movie = '../dora.mp4'
-    subtitles = 'dora.srt'
-    read_sub_return = read_subtitles(subtitles)
-    end_times = read_sub_return['timestamps']
-    dialogues = read_sub_return['dialogues']
-    #end_times = [10699]
-    play_vlc_video(movie, end_times, dialogues)
+    start_app()
+    # When everything is done, release the capture
+    video_capture.release()
