@@ -11,7 +11,6 @@ While this project is still an early iteration, future builds will have:
 ## What You Need To Build
 * Python
 * VLC Installed on Your Computer
-* ``VLC Binding for Python [vlc.py](http://git.videolan.org/?p=vlc/bindings/python.git;a=tree;f=generated;b=HEAD)``
 * Speech Recognition Python Package [SpeechRecognition 3.4.6](https://pypi.python.org/pypi/SpeechRecognition/)
 * A subtitle file (I am using a Dora .srt file off the internet)
 * A video file that goes along with that .srt file
